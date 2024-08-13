@@ -5,7 +5,8 @@
 -----------------------------------------------
 
 local Players = game:GetService("Players")
-local Player = Players.LocalPlayer
+
+local RunService = game:GetService("RunService")
 
 local ReplicatedFirst = game:GetService("ReplicatedFirst")
 local Data = ReplicatedFirst:WaitForChild("Data")
@@ -42,7 +43,8 @@ end
 local LoadConfig = function(Config: Configuration)
 	-- You can do stuff with level config, such as setting up the player's walkspeed or such, depends on your likings
 	-- Example:
-
+	
+	local Player = Players.LocalPlayer
 	local Character = Player.Character or Player.CharacterAdded:Wait()
 	local Humanoid: Humanoid = Character:FindFirstChild("Humanoid")
 	if not Humanoid then return end
@@ -70,16 +72,29 @@ end
 local LevelManager = {}
 
 LevelManager.LoadLevel = function(Level: string)
+	if not RunService:IsClient() then return end
+	
+	local Player = Players.LocalPlayer
+
 	local Level = CheckLevel(Level)
 	if not Level then return end
 
 	local LevelMap = Level.LevelMap
 	local LevelConfig = Level.LevelConfig
+	local SpawnLocation = LevelMap:WaitForChild("SpawnLocation")
 
 	LoadMap(LevelMap)
 	LoadConfig(LevelConfig)
 
-	task.delay(1, function() end)
+	task.delay(1, function()
+		local Character = Player.Character
+		if Character then 
+			local RootPart = Character:WaitForChild("HumanoidRootPart") 
+			if RootPart then
+				RootPart.CFrame = SpawnLocation.CFrame
+			end
+		end 
+	end)
 end
 
 LevelManager.UnloadLevel = function()
