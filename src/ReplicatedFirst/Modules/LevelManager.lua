@@ -97,8 +97,8 @@ LevelManager.LoadLevel = function(Level: string)
 	end)
 end
 
-LevelManager.UnloadLevel = function()
-	local Level = Map:FindFirstChildWhichIsA("Folder")
+LevelManager.UnloadLevel = function(Level: string)
+	local Level = Map:FindFirstChild(Level)
 	if not Level then return end
 	Level:Destroy()
 end
