@@ -17,7 +17,6 @@ local Map = game:GetService("Workspace"):WaitForChild("LoadedMap")
 -----------------------------------------------
 
 local CheckLevel = function(Level: string)
-	print(Levels[Level])
 	if Levels[Level] then
 		return Levels[Level]
 	else
@@ -47,6 +46,7 @@ local LoadConfig = function(Config: Configuration)
 	local Player = Players.LocalPlayer
 	local Character = Player.Character or Player.CharacterAdded:Wait()
 	local Humanoid: Humanoid = Character:FindFirstChild("Humanoid")
+
 	if not Humanoid then return end
 
 	-- Here, we can use intvalues to define the level's set default walkspeed and jump height
@@ -75,7 +75,11 @@ LevelManager.LoadLevel = function(Level: string)
 	if not RunService:IsClient() then return end
 	
 	local Player = Players.LocalPlayer
-
+	local Character = Player.Character or Player.CharacterAdded:Wait()
+	
+	local HumanoidRootPart: Part = Character:WaitForChild("HumanoidRootPart")
+	HumanoidRootPart.Anchored = true
+	
 	local Level = CheckLevel(Level)
 	if not Level then return end
 
@@ -89,17 +93,19 @@ LevelManager.LoadLevel = function(Level: string)
 	task.delay(1, function()
 		local Character = Player.Character
 		if Character then 
-			local RootPart = Character:WaitForChild("HumanoidRootPart") 
-			if RootPart then
-				RootPart.CFrame = SpawnLocation.CFrame
-			end
+			HumanoidRootPart.CFrame = SpawnLocation.CFrame
+			HumanoidRootPart.Anchored = false
 		end 
 	end)
 end
 
 LevelManager.UnloadLevel = function(Level: string)
+	if not Level then 
+		for _,Level in Map:GetChildren() do Level:Destroy() end
+		return
+	end
 	local Level = Map:FindFirstChild(Level)
-	if not Level then return end
+	
 	Level:Destroy()
 end
 
