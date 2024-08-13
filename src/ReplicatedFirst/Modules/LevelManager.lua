@@ -79,7 +79,7 @@ LevelManager.LoadLevel = function(Level: string)
 	local Level = CheckLevel(Level)
 	if not Level then return end
 
-	local LevelMap = Level.LevelMap
+	local LevelMap = Level.LevelMap:Clone()
 	local LevelConfig = Level.LevelConfig
 	local SpawnLocation = LevelMap:WaitForChild("SpawnLocation")
 
